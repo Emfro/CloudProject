@@ -3,6 +3,7 @@ import inspect
 from os import environ as env
 import sys
 from  novaclient import client
+from neutronclient.v2_0 import client as networkClient
 import keystoneclient.v3.client as ksclient
 from keystoneauth1 import loading
 from keystoneauth1 import session
@@ -21,7 +22,6 @@ server_name = 'ACC19_Project'
 ssh_key = 'marcusKey'
 
 loader = loading.get_plugin_loader('password')
-cloud = shade.openstack_cloud()
 auth = loader.load_from_options(auth_url=env['OS_AUTH_URL'],
                                 username=env['OS_USERNAME'],
                                 password=env['OS_PASSWORD'],
@@ -31,6 +31,7 @@ auth = loader.load_from_options(auth_url=env['OS_AUTH_URL'],
 
 sess = session.Session(auth=auth)
 nova = client.Client('2.1', session=sess)
+
 print("user authorization completed.")
 
 image = nova.glance.find_image(image_name)
@@ -53,12 +54,12 @@ else:
 
 #secgroup = nova.security_groups.find(name='default')
 secgroups = ['default']
-#if network != None:
-#    server = cloud.get_server(server_name)
-#    floating_ip = cloud.create_floating_ip(network)
-#    cloud.add_ips_to_server(server, ips=[floating_ip])
-#else:
-#    sys.exit("Ip pool name not defined")
+if network != None:
+    server = nova.servers.find(server_name)
+    floating_ip = nova.neutron.create_floatingip(network)
+    server.add_floating_ip(ips=[floating_ip])
+else:
+    sys.exit("Ip pool name not defined")
 
 print("Creating instance ... ")
 instance = nova.servers.create(name='ACC19'+worker_name, image=image, flavor=flavor, nics=nics,security_groups=secgroups, key_name = ssh_key)
