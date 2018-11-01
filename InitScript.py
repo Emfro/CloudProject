@@ -3,7 +3,6 @@ import inspect
 from os import environ as env
 import sys
 from  novaclient import client
-from neutronclient.v2_0 import client as networkClient
 import keystoneclient.v3.client as ksclient
 from keystoneauth1 import loading
 from keystoneauth1 import session
@@ -11,7 +10,7 @@ import shade
 
 flavor = 'ACCHT18.normal'
 private_net = 'SNIC 2018/10-30 Internal IPv4 Network'
-network = 'public'
+floating_ip_pool_name = None
 floating_ip = None
 image_name = 'ACC19_airf01l'
 worker_id = str(sys.argv[1])
@@ -27,10 +26,12 @@ auth = loader.load_from_options(auth_url=env['OS_AUTH_URL'],
                                 password=env['OS_PASSWORD'],
                                 project_name=env['OS_PROJECT_NAME'],
                                 project_id=env['OS_PROJECT_ID'],
+                                project_domain_name=env['OS_PROJECT_DOMAIN_NAME'],
                                 user_domain_name=env['OS_USER_DOMAIN_NAME'])
 
 sess = session.Session(auth=auth)
 nova = client.Client('2.1', session=sess)
+
 
 print("user authorization completed.")
 
@@ -54,10 +55,9 @@ else:
 
 #secgroup = nova.security_groups.find(name='default')
 secgroups = ['default']
-if network != None:
-    server = nova.servers.find(server_name)
-    floating_ip = nova.neutron.create_floatingip(network)
-    server.add_floating_ip(ips=[floating_ip])
+if floating_ip_pool_name == None:
+    floating_ip_pool_name = nova.floating_ip_pools.list()
+    floating_ip = nova.floating_ips.create(floating_ip_pool_name()[0].name)
 else:
     sys.exit("Ip pool name not defined")
 
@@ -74,3 +74,8 @@ while inst_status == 'BUILD':
     inst_status = instance.status
 
 print("Instance: "+ instance.name +" is in " + inst_status + "state")
+
+if floating_ip.ip != None: 
+   instance.add_floating_ip(floating_ip)
+   with open("/home/ubuntu/floating_ip.txt","w") as f:
+        f.write(floating_ip.ip)
