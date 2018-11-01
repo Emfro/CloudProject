@@ -6,7 +6,6 @@ from  novaclient import client
 import keystoneclient.v3.client as ksclient
 from keystoneauth1 import loading
 from keystoneauth1 import session
-import shade
 
 flavor = 'ACCHT18.normal'
 private_net = 'SNIC 2018/10-30 Internal IPv4 Network'
@@ -26,7 +25,6 @@ auth = loader.load_from_options(auth_url=env['OS_AUTH_URL'],
                                 password=env['OS_PASSWORD'],
                                 project_name=env['OS_PROJECT_NAME'],
                                 project_id=env['OS_PROJECT_ID'],
-                                project_domain_name=env['OS_PROJECT_DOMAIN_NAME'],
                                 user_domain_name=env['OS_USER_DOMAIN_NAME'])
 
 sess = session.Session(auth=auth)
@@ -35,12 +33,11 @@ nova = client.Client('2.1', session=sess)
 
 print("user authorization completed.")
 
-image = nova.glance.find_image(image_name)
-
-flavor = nova.flavors.find(name=flavor)
+image = nova.images.find(name = image_name)
+flavor = nova.flavors.find(name = flavor)
 
 if private_net != None:
-    net = nova.neutron.find_network(private_net)
+    net = nova.networks.find(label = private_net)
     nics = [{'net-id': net.id}]
 else:
     sys.exit("private-net not defined.")
@@ -56,8 +53,7 @@ else:
 #secgroup = nova.security_groups.find(name='default')
 secgroups = ['default']
 if floating_ip_pool_name == None:
-    floating_ip_pool_name = nova.floating_ip_pools.list()
-    floating_ip = nova.floating_ips.create(floating_ip_pool_name()[0].name)
+    floating_ip = nova.floating_ips.create(nova.floating_ip_pools.list()[0].name)
 else:
     sys.exit("Ip pool name not defined")
 
