@@ -78,7 +78,7 @@ if sys.argv[1].lower() == 'create':
 
 	if floating_ip.ip != None: 
    		instance.add_floating_ip(floating_ip)
-   		with open("/home/ubuntu/floating_ip.txt","w") as f:
+   		with open("floating_ip.txt","w") as f:
 	       	 	f.write(floating_ip.ip)
 
 if sys.argv[1].lower() == 'delete':
