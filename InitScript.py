@@ -35,7 +35,7 @@ nova = client.Client('2.1', session=sess)
 print("user authorization completed.")
 
 if sys.argv[1].lower() == 'create':
-	print("Creating " + sys.argv[2])
+	print("Creating " + sys.argv[2] + '...')
 	image = nova.images.find(name = image_name)
 	flavor = nova.flavors.find(name = flavor)
 
@@ -53,19 +53,17 @@ if sys.argv[1].lower() == 'create':
 # else:
 #     sys.exit("cloud-cfg.txt is not in current working directory")
 
-#secgroup = nova.security_groups.find(name='default')
+#	secgroup = nova.security_groups.find(name='default')
 	secgroups = ['default']
 	if floating_ip_pool_name == None and sys.argv[2].lower() == 'master':
     		floating_ip = nova.floating_ips.create(nova.floating_ip_pools.list()[0].name)
 
 	if sys.argv[2].lower() == 'worker':
 		userdata = open('WorkerCloud_config.txt')
-
-	if sys.argv[2].lower() == 'master':
-		node_name = 'Master'
-	else:
 		node_name = 'Worker' + sys.argv[3] 
-	print("Creating instance ... ")
+	elif sys.argv[2].lower() == 'master':
+		node_name = 'Master'
+
 	instance = nova.servers.create(name='ACC19'+ node_name, image=image, flavor=flavor, nics=nics,security_groups=secgroups, key_name = ssh_key, userdata = userdata)
 	inst_status = instance.status
 	print("waiting for 10 seconds.. ")
