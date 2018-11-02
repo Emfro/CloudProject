@@ -4,7 +4,7 @@ git clone https://github.com/marcusfroling/CloudProject.git
 mkdir /home/ubuntu/naca_airfoil/geo_files/
 mkdir /home/ubuntu/naca_airfoil/msh_files/
 
-sudo chmod 755 -R code
+sudo chmod 755 -R CloudProject
 
 sudo service rabbitmq-server start
 
