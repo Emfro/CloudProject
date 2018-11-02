@@ -1,4 +1,4 @@
-from worker_task import airfoilCalc
+from worker_airfoil_task import airfoilCalc
 from flask import Flask
 import time
 import subprocess
