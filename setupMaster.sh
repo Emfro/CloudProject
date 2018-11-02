@@ -1,8 +1,11 @@
 cd /home/ubuntu/
 
+sudo pip install Celery
+sudo apt-get install rabbitmq-server -y
+
 git clone https://github.com/marcusfroling/CloudProject.git
-mkdir /home/ubuntu/naca_airfoil/geo_files/
-mkdir /home/ubuntu/naca_airfoil/msh_files/
+sudo mkdir /home/ubuntu/naca_airfoil/geo_files/
+sudo mkdir /home/ubuntu/naca_airfoil/msh_files/
 
 sudo chmod 755 -R CloudProject
 
