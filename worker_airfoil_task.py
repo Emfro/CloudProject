@@ -39,18 +39,18 @@ def airfoilCalc(file_name, samples=10, viscosity=0.0001, speed=10.,airtime=1):
 		listOfResults = []
 		pathToXmls = '/home/ubuntu/naca_airfoil/msh_files/'
 
-		os.system('sudo chmod 777 -R /home/ubuntu/code/')
+		os.system('sudo chmod 755 -R /home/ubuntu/CloudProject/')
 		
                 obj_tuple = swift_conn.get_object(container_name, file_name)
                 with open(pathToXmls+file_name, 'w') as xmlfile:
  	             xmlfile.write(obj_tuple[1])
                	print "Doing airfoil on: " + file_name
 		time.sleep(2)
-		os.system('sudo chmod 777 -R ' + pathToXmls)
+		os.system('sudo chmod 755 -R /home/ubuntu/results/' + pathToXmls)
                 subprocess.call(['sudo', '/home/ubuntu/naca_airfoil/navier_stokes_solver/./airfoil', str(samples), str(viscosity), str(speed), str(airtime), pathToXmls+file_name])
-	        os.system('sudo mkdir /home/ubuntu/code/test_celery/'+file_name+'results')
-		os.system('sudo chmod 777 -R /home/ubuntu/code/test_celery/results/')
-         	os.system('sudo mv /home/ubuntu/code/test_celery/results/drag_ligt.m /home/ubuntu/code/test_celery/'+file_name+'results')
+	        os.system('sudo mkdir /home/ubuntu/results/'+file_name+'results')
+		os.system('sudo chmod 755 -R /home/ubuntu/results/')
+         	os.system('sudo mv /home/ubuntu/results/drag_ligt.m /home/ubuntu/results'+file_name+'results')
 		angle = re.search('a(.+?)n', file_name)
 		if angle:
 		     angle = angle.group(1)
